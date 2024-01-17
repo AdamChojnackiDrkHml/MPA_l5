@@ -15,7 +15,7 @@ func SetGeneratingFunction(x float64) float64 {
 }
 
 func WheelGeneratingFunction(x float64) float64 {
-	return SeqGeneratingFunction(ZGeneratingFunction(x))
+	return CycleGeneratingFunction(ZGeneratingFunction(x))
 }
 
 func PlankGeneratingFunction(x float64) float64 {

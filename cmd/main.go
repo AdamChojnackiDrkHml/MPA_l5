@@ -33,8 +33,11 @@ func printTrain(t train.Train) {
 }
 
 func main() {
-	t := train.CreateTrain(0.3)
 
-	printTrain(t)
+	for k := 0.48; k > 0.0; k -= 0.01 {
+		fmt.Println(k)
+		t := train.CreateTrain(k)
+		printTrain(t)
+	}
 
 }

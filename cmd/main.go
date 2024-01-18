@@ -2,7 +2,6 @@ package main
 
 import (
 	"L5/pkg/samplers"
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -46,10 +45,10 @@ type Result struct {
 
 func main() {
 
-	numOfTrials := 10
+	numOfTrials := 100
 	minX := 0.001
 	maxX := 0.4851
-	deltaX := 0.01
+	deltaX := 0.001
 
 	bR := BigResult{
 		Results: make([]Result, 0),
@@ -76,10 +75,10 @@ func main() {
 		return
 	}
 
-	output := &bytes.Buffer{}
-	json.Indent(output, b, "", "  ")
+	// output := &bytes.Buffer{}
+	// json.Indent(output, b, "", "  ")
 
 	f, _ := os.Create("data/res.json")
 	defer f.Close()
-	f.WriteString(output.String())
+	f.WriteString(string(b))
 }

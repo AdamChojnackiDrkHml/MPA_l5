@@ -83,34 +83,15 @@ func WagonWithPassengersSampler(x float64) WagonWithPassengers {
 		Wagon: WagonSampler(x),
 	}
 
-	var passengers []Passenger
+	len := dist.Poisson(gf.PassengerGeneratingFunction(x), consts.MinPassengerCount)
+	passengers := make([]Passenger, len)
 
-	for {
-		len := dist.Poisson(gf.PassengerGeneratingFunction(x), consts.MinPassengerCount)
-		passengers = make([]Passenger, len)
-		for i := range passengers {
-			passengers[i] = PassengerSampler(x)
-		}
-
-		if areUnique(passengers) {
-			wwp.Passengers = passengers
-			return wwp
-		}
-	}
-}
-
-func areUnique(elems []Passenger) bool {
-	set := make(map[[2]int]bool)
-
-	for _, elem := range elems {
-		if set[[2]int{elem.Body, elem.Head}] {
-			return false
-		}
-
-		set[[2]int{elem.Body, elem.Head}] = true
+	for i := range passengers {
+		passengers[i] = PassengerSampler(x)
 	}
 
-	return true
+	wwp.Passengers = passengers
+	return wwp
 }
 
 func TrainSampler(x float64) Train {

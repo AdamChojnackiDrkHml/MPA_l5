@@ -1,21 +1,24 @@
 package main
 
 import (
-	"L5/pkg/train"
+	"L5/pkg/samplers"
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"os"
 )
 
-func printWagon(w train.Wagon) {
+func printWagon(w samplers.Wagon) {
 	fmt.Print(" Planks and wheels = ")
 	for _, p := range w.Planks {
 		fmt.Print(p.Wheel, " ")
 	}
 }
 
-func printPassenger(p train.Passenger) {
+func printPassenger(p samplers.Passenger) {
 	fmt.Printf("{%v %v}", p.Body, p.Head)
 }
-func printTrain(t train.Train) {
+func printTrain(t samplers.Train) {
 	fmt.Print("Lokomotywa: ")
 	printWagon(t.Locomotive)
 	fmt.Println()
@@ -32,12 +35,51 @@ func printTrain(t train.Train) {
 	}
 }
 
+type BigResult struct {
+	Results []Result
+}
+
+type Result struct {
+	Trains []samplers.Train
+	X      float64
+}
+
 func main() {
 
-	for k := 0.48; k > 0.0; k -= 0.01 {
-		fmt.Println(k)
-		t := train.CreateTrain(k)
-		printTrain(t)
+	numOfTrials := 10
+	minX := 0.001
+	maxX := 0.4851
+	deltaX := 0.01
+
+	bR := BigResult{
+		Results: make([]Result, 0),
 	}
 
+	for x := minX; x <= maxX; x += deltaX {
+		fmt.Println(x)
+
+		r := Result{
+			Trains: make([]samplers.Train, numOfTrials),
+			X:      x,
+		}
+
+		for i := 0; i < numOfTrials; i++ {
+			r.Trains[i] = samplers.TrainSampler(x)
+		}
+
+		bR.Results = append(bR.Results, r)
+	}
+
+	b, err := json.Marshal(bR)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	output := &bytes.Buffer{}
+	json.Indent(output, b, "", "  ")
+
+	f, _ := os.Create("data/res.json")
+	defer f.Close()
+	f.WriteString(output.String())
 }

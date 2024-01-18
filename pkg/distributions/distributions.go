@@ -1,4 +1,4 @@
-package generators
+package distributions
 
 import (
 	"math"
@@ -14,32 +14,44 @@ const (
 	SET = 3
 )
 
-func logarithmic(x float64) int {
+func Logarithmic(x float64, min int) int {
 	r := rand.New(rand.NewSource(uint64(time.Now().UnixNano())))
 	U := r.Float64()
 	p_k := -1 / math.Log(1-x)
-	S := 0.0
-	k := 0
+	S := p_k
+	k := 1
+
+	for k < min {
+		p_k = p_k * x * (float64(k) / float64(k+1))
+		S += p_k
+		k++
+	}
 
 	for U > S {
-		S = S + p_k
 		p_k = p_k * x * (float64(k) / float64(k+1))
+		S = S + p_k
 		k++
 	}
 
 	return k
 }
 
-func Logarithmic(x float64, minSize int) int {
-	return generateMin(x, minSize, logarithmic)
-}
+// func Logarithmic(x float64, minSize int) int {
+// 	return generateMin(x, minSize, logarithmic)
+// }
 
-func poisson(x float64) int {
+func Poisson(x float64, min int) int {
 	r := rand.New(rand.NewSource(uint64(time.Now().UnixNano())))
 	U := r.Float64()
 	p_k := math.Exp(-x)
 	S := 0.0
 	k := 0
+
+	for k < min {
+		S += p_k
+		p_k = (p_k / float64(k+1)) * x
+		k++
+	}
 
 	for U > S {
 		S = S + p_k
@@ -50,16 +62,22 @@ func poisson(x float64) int {
 	return k
 }
 
-func Poisson(x float64, minLen int) int {
-	return generateMin(x, minLen, poisson)
-}
+// func Poisson(x float64, minLen int) int {
+// 	return generateMin(x, minLen, poisson)
+// }
 
-func geometric(x float64) int {
+func Geometric(x float64, min int) int {
 	r := rand.New(rand.NewSource(uint64(time.Now().UnixNano())))
 	U := r.Float64()
 	p_k := 1 - x
 	S := 0.0
 	k := 0
+
+	for k < min {
+		S += p_k
+		p_k = x * p_k
+		k++
+	}
 
 	for U > S {
 		S = S + p_k
@@ -70,17 +88,17 @@ func geometric(x float64) int {
 	return k
 }
 
-func Geometric(x float64, minLen int) int {
-	return generateMin(x, minLen, geometric)
-}
+// func Geometric(x float64, minLen int) int {
+// 	return generateMin(x, minLen, geometric)
+// }
 
-func generateMin(x float64, min int, gf func(float64) int) int {
-	var k int
-	for k = geometric(x); k < min; k = geometric(x) {
-	}
+// func generateMin(x float64, min int, gf func(float64) int) int {
+// 	var k int
+// 	for k = geometric(x); k < min; k = geometric(x) {
+// 	}
 
-	return k
-}
+// 	return k
+// }
 
 func NextBernoulli(x float64) bool {
 	dist := distuv.Bernoulli{

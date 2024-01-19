@@ -48,7 +48,7 @@ func main() {
 	numOfTrials := 100
 	minX := 0.001
 	maxX := 0.4851
-	deltaX := 0.001
+	deltaX := 0.0001
 
 	bR := BigResult{
 		Results: make([]Result, 0),
